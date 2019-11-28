@@ -23,12 +23,12 @@ def apply_thres(matched_points):
         results.append((thres, np.sum(matched_points[...,2]<thres)))
     return np.array(results)
 
-@jit
+ 
 def sort_mp(mp):
     sort_idx = mp[...,2].argsort()
     return mp[sort_idx]
 
-@jit
+ 
 def get_unique(mp):
     sort = sort_mp(mp)
     match = np.concatenate((cv2.KeyPoint_convert(sort[...,0]), cv2.KeyPoint_convert(sort[...,1])), axis=1)
@@ -38,7 +38,7 @@ def get_unique(mp):
     unique = match.loc[(max01 & max23)]
     return unique.values[:, 1:]
 
-@jit    
+     
 def drawKeypoints(img, kp, color=(255, 0, 0), radius=False):
     img = img.copy()
     if img.ndim == 2:
@@ -46,17 +46,17 @@ def drawKeypoints(img, kp, color=(255, 0, 0), radius=False):
     if not radius:
         radius = min(img.shape)// 50
     for p in kp:
-        img = cv2.circle(img, (int(p[0]), int(p[1])), radius, color, thickness=-1)
+        img = cv2.circle(img, (int(p.pt[0]), int(p.pt[1])), radius, color, thickness=-1)
     return img
 
-@jit
+ 
 def normalize_des(des):
     norm_des = des / np.sum(des, axis=1)[...,np.newaxis]
     norm_des = np.clip(norm_des, 0, 0.2)
     norm_des = norm_des / np.sum(norm_des, axis=1)[...,np.newaxis]
     return norm_des
 
-@jit
+ 
 def match(des1, des2, kp1, kp2, L=2):
     norm1 = normalize_des(des1)
     norm2 = normalize_des(des2)
@@ -71,7 +71,7 @@ def match(des1, des2, kp1, kp2, L=2):
         matched_points.append((kp1[v], kp2[min_idx], ratio))
     return np.array(matched_points)
 
-@jit
+ 
 def draw_matching_lines(img1, img2, match, color=(255,0,0), size=5):
     h = img1.shape[1]
     img = np.hstack((img1, img2))
